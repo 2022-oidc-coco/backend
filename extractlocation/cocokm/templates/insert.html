@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset="utf-8">
+  <title>insert</title>
+</head>
+<body>
+	<h1>여행지 입력</h1>
+	<form action="/insert" method="post">
+		여행지: <input type="text" name="name">
+    {% csrf_token %}
+		<input type="submit" value="검색">
+	</form>
+</body>
+</html>

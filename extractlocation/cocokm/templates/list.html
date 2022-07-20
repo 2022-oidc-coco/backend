@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset="utf-8">
+  <title>list</title>
+</head>
+<body>
+	결과 출력: {{key}}
+  <ul>
+    <li> 비디오ID | 장소명 | 장소URL</li>
+    {% for loc in locationInfoList %}
+    <li><a href="/view/{{loc.video_id}}">{{ loc.place_name}}</a> | {{ loc.place_url}}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
