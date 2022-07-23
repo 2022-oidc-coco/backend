@@ -10,6 +10,8 @@ from difflib import SequenceMatcher
 def data_processing_(q,data):
 
     place = q
+    if (place == "성수"):
+        place = "성동"
     video_id = []
     title = []
     description = []
