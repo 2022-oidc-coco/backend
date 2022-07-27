@@ -10,7 +10,7 @@ class locationInfo(models.Model):
     # cdate = models.DateTimeField(auto_now_add=True)
     video_id = models.CharField(max_length=50)
     place_name = models.CharField(max_length=50)
-    publishTime = models.CharField(max_length=50)
+    publishTime = models.TimeField()
     category = models.CharField(max_length=50)
     place_url = models.CharField(max_length=50)
     # address_6 = models.CharField(max_length=50)
