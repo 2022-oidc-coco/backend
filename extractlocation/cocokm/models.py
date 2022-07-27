@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 class locationInfo(models.Model):
@@ -10,7 +11,7 @@ class locationInfo(models.Model):
     # cdate = models.DateTimeField(auto_now_add=True)
     video_id = models.CharField(max_length=50)
     place_name = models.CharField(max_length=50)
-    publishTime = models.TimeField()
+    publishTime = models.DateTimeField(default=timezone.now)
     category = models.CharField(max_length=50)
     place_url = models.CharField(max_length=50)
     # address_6 = models.CharField(max_length=50)
@@ -18,7 +19,7 @@ class locationInfo(models.Model):
     # likeCount = models.IntegerField()
     x = models.DecimalField(max_digits = 24, decimal_places = 18)
     y = models.DecimalField(max_digits = 24, decimal_places = 18)
-
+    author = models.CharField(max_length=50)
     # id varchar(32) not null,
     # place_name varchar(50) not null,
     # viewCount int,

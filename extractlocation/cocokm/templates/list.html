@@ -9,7 +9,7 @@
   <ul>
     <li> 비디오ID | 장소명 | 장소URL</li>
     {% for loc in locationInfoList %}
-    <li><a href="/view/{{loc.video_id}}">{{ loc.place_name}}</a> | {{ loc.place_url}}</li>
+    <li><a href="/view/{{loc.id}}">{{ loc.place_name}}</a> | {{ loc.place_url}}</li>
     {% endfor %}
   </ul>
 </body>

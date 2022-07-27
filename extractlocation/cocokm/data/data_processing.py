@@ -17,6 +17,7 @@ def data_processing_(q,data):
     description = []
     publishTime = []
     viewCount = []
+    author = []
 
     # 영상의 제목, 길이, 게시자, 날짜, 조회수, 키워드, 설명, 썸네일 URL 같은 정보 가져오기
     # DOWNLOAD_FOLDER = "C:\\Users\\hlee\\Desktop"
@@ -33,12 +34,14 @@ def data_processing_(q,data):
       description.append(yt.description)
       publishTime.append(yt.publish_date)
       viewCount.append(yt.views)
+      author.append(yt.author)
 
     df = pd.DataFrame(video_id,columns=['video_id'])
     df['title'] = title
     df['description']= description
     df['publishTime'] = publishTime
     df['viewCount'] = viewCount
+    df['author'] = author
     df_new = df.drop(['title','description'],axis=1)
     first_info = df_new.to_dict('record')
     # print('정제되지 않은 첫 데이터','\n',first_info)
@@ -433,9 +436,9 @@ def data_processing_(q,data):
 
     # 중복 제거!!!
     x = list({i['place_name'][0]:i for i in real}.values())
-    print("최종 데이터!!!!!")
+    # print("최종 데이터!!!!!")
     # print(x)
-    print(place)
+    print("검색어 : ", place)
     return x
 
 # dataset = collect_data('제주 Vlog','viewCount')

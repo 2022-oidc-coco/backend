@@ -30,6 +30,7 @@ def insert(request):
         irum = request.POST["name"]
         dataset = collect_data(irum,'viewCount')
         records = data_processing_(irum,dataset)
+        print("-----------------데이터 전처리 결과-----------------")
         print(records)
         for i in range(len(records)):
             # form = Form(records[i])
@@ -37,17 +38,19 @@ def insert(request):
             place_name = records[i]['place_name'][0],
             x=Decimal(records[i]['x'][0]),
             y =Decimal(records[i]['y'][0]),
-            place_url =records[i]['place_url'][0],
-            category =records[i]['category'][0],
-            video_id=records[i]['video_id'][0],
-            publishTime=(records[i]['publishTime']),
-            viewCount=records[i]['viewCount']
+            place_url =records[i]['place_url'],
+            category =records[i]['category'],
+            video_id=records[i]['video_id'],
+            publishTime=records[i]['publishTime'].to_pydatetime(),
+            viewCount=records[i]['viewCount'],
+            author = records[i]['author']
             )
             # print(form)
             # if form.is_valid():
             form.save()
         locinfo = locationInfo.objects.all()
-        print("DB",locinfo)
+        print("-----------------DB-----------------")
+        print(locinfo)
         # print("---------------form----------------")
         # print(form)
         return render(request, "list.html", {"key":irum, 'locationInfo':locinfo})
