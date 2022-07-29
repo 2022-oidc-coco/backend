@@ -20,18 +20,13 @@
 
 ## Result
 ### Video
-[![Video Label](https://img.youtube.com/vi/xOsLIiBStEs/0.jpg)](https://youtu.be/xOsLIiBStEs)
+일반 브이로그 영상들
 
 ### Detected scenes
-![Alt text](result/scenes/001.jpg?raw=true)
+![vlog_Jeju-Scene-005-02](https://user-images.githubusercontent.com/57217495/181785532-69795bb1-f9e1-45d5-8b3e-3c67c89c78a7.jpg)
+![vlog_Jeju-Scene-006-03](https://user-images.githubusercontent.com/57217495/181785587-49902e62-9f71-49ef-ab64-06dbe44db0d7.jpg)
 
-![Alt text](result/scenes/003.jpg?raw=true)
 
-![Alt text](result/scenes/004.jpg?raw=true)
-
-![Alt text](result/scenes/008.jpg?raw=true)
-
-![Alt text](result/scenes/011.jpg?raw=true)
 
 ## Reference
 ### PySceneDetect
