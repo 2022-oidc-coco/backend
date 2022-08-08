@@ -6,6 +6,7 @@ from cocokm.data.data_processing import data_processing_
 from cocokm.forms import *
 from decimal import Decimal
 from datetime import datetime
+from pprint import pprint
 
 irum = ""
 
@@ -29,31 +30,40 @@ def insert(request):
         #irum = request.POST.get("name")
         irum = request.POST["name"]
         dataset = collect_data(irum,'viewCount')
-        records = data_processing_(irum,dataset)
+        v_records, p_records = data_processing_(irum,dataset)
         print("-----------------데이터 전처리 결과-----------------")
-        print(records)
-        for i in range(len(records)):
+        pprint(v_records)
+        for i in range(len(v_records)):
             # form = Form(records[i])
-            form = locationInfo(
-            place_name = records[i]['place_name'][0],
-            x=Decimal(records[i]['x'][0]),
-            y =Decimal(records[i]['y'][0]),
-            place_url =records[i]['place_url'],
-            category =records[i]['category'],
-            video_id=records[i]['video_id'],
-            publishTime=records[i]['publishTime'].to_pydatetime(),
-            viewCount=records[i]['viewCount'],
-            author = records[i]['author']
+            form = Video(
+            videoID=v_records[i]['video_id'],
+            publishTime=v_records[i]['publishTime'].to_pydatetime(),
+            viewCount=v_records[i]['viewCount'],
+            author = v_records[i]['author'],
+            videoThumbnail = v_records[i]['video_thumbnail'],
+            title = v_records[i]['title'],
+            videoURL = v_records[i]['video_url']
             )
+            # form = locationInfo(
+            # place_name = records[i]['place_name'][0],
+            # x=Decimal(records[i]['x'][0]),
+            # y =Decimal(records[i]['y'][0]),
+            # place_url =records[i]['place_url'],
+            # category =records[i]['category'],
+            # video_id=records[i]['video_id'],
+            # publishTime=records[i]['publishTime'].to_pydatetime(),
+            # viewCount=records[i]['viewCount'],
+            # author = records[i]['author']
+            # )
             # print(form)
             # if form.is_valid():
             form.save()
-        locinfo = locationInfo.objects.all()
+        videoinfo = Video.objects.all()
         print("-----------------DB-----------------")
-        print(locinfo)
+        pprint(videoinfo)
         # print("---------------form----------------")
         # print(form)
-        return render(request, "list.html", {"key":irum, 'locationInfo':locinfo})
+        return render(request, "list.html", {"key":irum, 'Video':videoinfo})
     else:
         print("요청실패")
 #
@@ -67,9 +77,9 @@ def insert(request):
 #     return render(request, 'write.html',{'form':form})
 
 def list(request):
-    locationInfoList = locationInfo.objects.all() #Article이라는 DB에 있는 모든 column을 가져옴
-    return render(request, 'list.html',{"key":irum,'locationInfoList':locationInfoList})
+    videoInfoList = Video.objects.all() #Article이라는 DB에 있는 모든 column을 가져옴
+    return render(request, 'list.html',{"key":irum,'videoInfoList':videoInfoList})
 
 def view(request,num="1"):
-    locInfo = locationInfo.objects.get(id=num)
-    return render(request, 'view.html',{'locInfo':locInfo})
+    videoInfo = Video.objects.get(id=num)
+    return render(request, 'view.html',{'videoInfo':videoInfo})

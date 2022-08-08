@@ -18,6 +18,8 @@ def data_processing_(q,data):
     publishTime = []
     viewCount = []
     author = []
+    video_url = []
+    video_thumbnail=[]
 
     # 영상의 제목, 길이, 게시자, 날짜, 조회수, 키워드, 설명, 썸네일 URL 같은 정보 가져오기
     # DOWNLOAD_FOLDER = "C:\\Users\\hlee\\Desktop"
@@ -35,6 +37,8 @@ def data_processing_(q,data):
       publishTime.append(yt.publish_date)
       viewCount.append(yt.views)
       author.append(yt.author)
+      video_url.append(url)
+      video_thumbnail.append(yt.thumbnail_url)
 
     df = pd.DataFrame(video_id,columns=['video_id'])
     df['title'] = title
@@ -42,7 +46,11 @@ def data_processing_(q,data):
     df['publishTime'] = publishTime
     df['viewCount'] = viewCount
     df['author'] = author
-    df_new = df.drop(['title','description'],axis=1)
+    df['video_url']=video_url
+    df['video_thumbnail'] = video_thumbnail
+    df2 = df.drop(['description'],axis=1)
+    video_info = df2.to_dict('record')
+    df_new = df.drop(['title','description','publishTime','viewCount','author','video_url','video_thumbnail'],axis=1)
     first_info = df_new.to_dict('record')
     # print('정제되지 않은 첫 데이터','\n',first_info)
 
@@ -439,7 +447,7 @@ def data_processing_(q,data):
     # print("최종 데이터!!!!!")
     # print(x)
     print("검색어 : ", place)
-    return x
+    return video_info, x
 
 # dataset = collect_data('제주 Vlog','viewCount')
 # records = data_processing_(dataset)
