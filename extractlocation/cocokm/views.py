@@ -36,13 +36,13 @@ def insert(request):
         for i in range(len(v_records)):
             # form = Form(records[i])
             form = Video(
-            videoID=v_records[i]['video_id'],
+            videoID=v_records[i]['videoID'],
             publishTime=v_records[i]['publishTime'].to_pydatetime(),
             viewCount=v_records[i]['viewCount'],
             author = v_records[i]['author'],
-            videoThumbnail = v_records[i]['video_thumbnail'],
+            videoThumbnail = v_records[i]['videoThumbnail'],
             title = v_records[i]['title'],
-            videoURL = v_records[i]['video_url']
+            videoURL = v_records[i]['videoURL']
             )
             # form = locationInfo(
             # place_name = records[i]['place_name'][0],
@@ -58,9 +58,24 @@ def insert(request):
             # print(form)
             # if form.is_valid():
             form.save()
+        for i in range(len(p_records)):
+            form = Place(
+            videoID = p_records[i]['videoID'],
+            placeName = p_records[i]['placeName'],
+            placeID = p_records[i]['placeID'],
+            x = p_records[i]['x'],
+            y = p_records[i]['y'],
+            category = p_records[i]['category'],
+            placeURL = p_records[i]['placeURL'],
+            placeThumbnail = p_records[i]['placeThumbnail'],
+            placeRating = p_records[i]['placeRating']
+            )
+            form.save()
         videoinfo = Video.objects.all()
+        placeinfo = Place.objects.all()
         print("-----------------DB-----------------")
         pprint(videoinfo)
+        pprint(placeinfo)
         # print("---------------form----------------")
         # print(form)
         return render(request, "list.html", {"key":irum, 'Video':videoinfo})

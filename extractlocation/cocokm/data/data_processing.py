@@ -7,19 +7,26 @@ import pandas as pd
 from pytube import YouTube
 from difflib import SequenceMatcher
 
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import time
+from bs4 import BeautifulSoup as bs
+import requests
+
 def data_processing_(q,data):
 
     place = q
     if (place == "성수"):
         place = "성동"
-    video_id = []
+    videoID = []
     title = []
     description = []
     publishTime = []
     viewCount = []
     author = []
-    video_url = []
-    video_thumbnail=[]
+    videoURL = []
+    videoThumbnail=[]
 
     # 영상의 제목, 길이, 게시자, 날짜, 조회수, 키워드, 설명, 썸네일 URL 같은 정보 가져오기
     # DOWNLOAD_FOLDER = "C:\\Users\\hlee\\Desktop"
@@ -31,26 +38,26 @@ def data_processing_(q,data):
       # print("게시날짜 : ", yt.publish_date)
       # print("조회수 : ", yt.views)
       # print("설명 : ", yt.description)
-      video_id.append(i)
+      videoID.append(i)
       title.append(yt.title)
       description.append(yt.description)
       publishTime.append(yt.publish_date)
       viewCount.append(yt.views)
       author.append(yt.author)
-      video_url.append(url)
-      video_thumbnail.append(yt.thumbnail_url)
+      videoURL.append(url)
+      videoThumbnail.append(yt.thumbnail_url)
 
-    df = pd.DataFrame(video_id,columns=['video_id'])
+    df = pd.DataFrame(videoID,columns=['videoID'])
     df['title'] = title
     df['description']= description
     df['publishTime'] = publishTime
     df['viewCount'] = viewCount
     df['author'] = author
-    df['video_url']=video_url
-    df['video_thumbnail'] = video_thumbnail
+    df['videoURL']=videoURL
+    df['videoThumbnail'] = videoThumbnail
     df2 = df.drop(['description'],axis=1)
     video_info = df2.to_dict('record')
-    df_new = df.drop(['title','description','publishTime','viewCount','author','video_url','video_thumbnail'],axis=1)
+    df_new = df.drop(['title','description','publishTime','viewCount','author','videoURL','videoThumbnail'],axis=1)
     first_info = df_new.to_dict('record')
     # print('정제되지 않은 첫 데이터','\n',first_info)
 
@@ -193,22 +200,50 @@ def data_processing_(q,data):
         # print('num', num2)
         if ('관광,명소' in total_catergorize_list[i][j][1]['category_name'].split()):
           category_list[num2] = '관광,명소'
-        elif ('숙박' in (total_catergorize_list[i][j][1]['category_name'].split())):
-          category_list[num2] = '숙박'
-        elif ('여행' in (total_catergorize_list[i][j][1]['category_name'].split())): #공원
-          category_list[num2] = '여행'
-        elif ('문화,예술' in (total_catergorize_list[i][j][1]['category_name'].split())):
-          category_list[num2] = '문화,예술'
-        elif ('스포츠,레저' in (total_catergorize_list[i][j][1]['category_name'].split())):
-          category_list[num2] = '스포츠,레저'
-        elif ('가정,생활' in (total_catergorize_list[i][j][1]['category_name'].split())):
-          category_list[num2] = '가정,생활'
+        elif ('숙박' in (total_catergorize_list[i][j][1]['category_name'].split())) or ('여행' in (total_catergorize_list[i][j][1]['category_name'].split())) or ('스포츠,레저' in (total_catergorize_list[i][j][1]['category_name'].split())):
+          category_list[num2] = '여행 및 기타'
+        elif ('문화,예술' in (total_catergorize_list[i][j][1]['category_name'].split())) or  ('가정,생활' in (total_catergorize_list[i][j][1]['category_name'].split())):
+          category_list[num2] = '문화,예술,가정,생활'
         if ('카페' in (total_catergorize_list[i][j][1]['category_name'].split())) :
           category_list[num2] = '카페'
         elif ('음식점' in (total_catergorize_list[i][j][1]['category_name'].split())):
           category_list[num2] = '음식점'
         num2 +=1
+    # print('fix : ',category_list)
         # print('fix : ',category_list)
+
+    # 장소 썸네일, 평점 크롤링해오기
+    driver = webdriver.Chrome('/home/kmusw/바탕화면/backend/extractlocation/chromedriver')
+    for i in range (len(total_catergorize_list)):
+      for j in range (len(total_catergorize_list[i])):
+        # print(total_catergorize_list[i][j][1]['place_url'])
+        driver.get(total_catergorize_list[i][j][1]['place_url'])
+        time.sleep(1)
+        html = driver.page_source
+        soup = bs(html,'html.parser')
+
+         # 사진url 수집
+        # detail = driver.find_element('xpath','//*[@id="mArticle"]/div[1]/div[1]/div[1]/a').text
+
+        place_photo = ""
+        try:
+            # photo = driver.find_element(By.CSS_SELECTOR('span.bg_present'))
+            photo = driver.find_element('xpath', '//*[@id="mArticle"]/div[1]/div[1]/div[1]/a/span[1]')
+            photo_url = photo.get_attribute('style')
+            m = re.search('"(.+?)"', photo_url)
+            if m:
+                place_photo = "https:" + m.group(1)
+            else:
+                place_photo = ""
+        except:
+            place_photo = ""
+
+        # print(place_photo)
+        total_catergorize_list[i][j][1]['placeThumbnail'] = place_photo
+
+        rating = driver.find_element('xpath','//*[@id="mArticle"]/div[1]/div[1]/div[2]/div/div/a[1]/span[1]').text
+        # print(rating)
+        total_catergorize_list[i][j][1]['placeRating'] = rating
 
     # 필요한 정보들만 추려서 새 리스트에 넣기
     total_final_info = []
@@ -223,7 +258,7 @@ def data_processing_(q,data):
         # final_info.append({'place_name':[total_catergorize_list[i][j][1]['place_name']]})
         # final_info.append({'x':[total_catergorize_list[i][j][1]['x']]})
         # final_info.append({'y':[total_catergorize_list[i][j][1]['y']]})
-        final_info.append({'place_name':[total_catergorize_list[i][j][1]['place_name']],'x':[total_catergorize_list[i][j][1]['x']], 'y':[total_catergorize_list[i][j][1]['y']], 'place_url':total_catergorize_list[i][j][1]['place_url'], 'category':category_list[n]})
+        final_info.append({'placeName':[total_catergorize_list[i][j][1]['place_name']],'x':[total_catergorize_list[i][j][1]['x']], 'y':[total_catergorize_list[i][j][1]['y']], 'placeURL':total_catergorize_list[i][j][1]['place_url'], 'category':category_list[n],'placeID':[total_catergorize_list[i][j][1]['id']],'placeThumbnail':[total_catergorize_list[i][j][1]['placeThumbnail']],'placeRating':[total_catergorize_list[i][j][1]['placeRating']]})
         semi_final_info.append(final_info)
         li.append(final_info)
         n+=1
@@ -374,23 +409,47 @@ def data_processing_(q,data):
         # print('num', num2_des)
         if ('관광,명소' in total_catergorize_list_des[i][j][1]['category_name'].split()):
           category_list_des[num2_des] = '관광,명소'
-        elif ('숙박' in (total_catergorize_list_des[i][j][1]['category_name'].split())):
-          category_list_des[num2_des] = '숙박'
-        elif ('여행' in (total_catergorize_list_des[i][j][1]['category_name'].split())): #공원
-          category_list_des[num2_des] = '여행'
-        elif ('문화,예술' in (total_catergorize_list_des[i][j][1]['category_name'].split())):
-          category_list_des[num2_des] = '문화,예술'
-        elif ('스포츠,레저' in (total_catergorize_list_des[i][j][1]['category_name'].split())):
-          category_list_des[num2_des] = '스포츠,레저'
-        elif ('가정,생활' in (total_catergorize_list_des[i][j][1]['category_name'].split())):
-          # print('hi')
-          category_list_des[num2_des] = '가정,생활'
+        elif ('숙박' in (total_catergorize_list_des[i][j][1]['category_name'].split())) or  ('여행' in (total_catergorize_list_des[i][j][1]['category_name'].split())) or ('스포츠,레저' in (total_catergorize_list_des[i][j][1]['category_name'].split())):
+          category_list_des[num2_des] = '여행 및 기타'
+        elif ('문화,예술' in (total_catergorize_list_des[i][j][1]['category_name'].split())) or ('가정,생활' in (total_catergorize_list_des[i][j][1]['category_name'].split())):
+          category_list_des[num2_des] = '문화,예술,가정,생활'
         if ('카페' in (total_catergorize_list_des[i][j][1]['category_name'].split())) :
           category_list_des[num2_des] = '카페'
         elif ('음식점' in (total_catergorize_list_des[i][j][1]['category_name'].split())):
           category_list_des[num2_des] = '음식점'
         num2_des +=1
         # print('fix : ',category_list_des)
+
+    for i in range (len(total_catergorize_list_des)):
+      for j in range (len(total_catergorize_list_des[i])):
+        # print(total_catergorize_list_des[i][j][1]['place_url'])
+        driver.get(total_catergorize_list_des[i][j][1]['place_url'])
+        time.sleep(1)
+        html = driver.page_source
+        soup = bs(html,'html.parser')
+
+         # 사진url 수집
+        # detail = driver.find_element('xpath','//*[@id="mArticle"]/div[1]/div[1]/div[1]/a').text
+
+        place_photo = ""
+        try:
+            # photo = driver.find_element(By.CSS_SELECTOR('span.bg_present'))
+            photo = driver.find_element('xpath', '//*[@id="mArticle"]/div[1]/div[1]/div[1]/a/span[1]')
+            photo_url = photo.get_attribute('style')
+            m = re.search('"(.+?)"', photo_url)
+            if m:
+                place_photo = "https:" + m.group(1)
+            else:
+                place_photo = ""
+        except:
+            place_photo = ""
+
+        # print(place_photo)
+        total_catergorize_list_des[i][j][1]['placeThumbnail'] = place_photo
+
+        rating = driver.find_element('xpath','//*[@id="mArticle"]/div[1]/div[1]/div[2]/div/div/a[1]/span[1]').text
+        # print(rating)
+        total_catergorize_list_des[i][j][1]['placeRating'] = rating
 
     # 필요한 정보들만 추려서 새 리스트에 넣기
     total_final_info_des = []
@@ -405,7 +464,7 @@ def data_processing_(q,data):
         # final_info_des.append({'place_name':[total_catergorize_list_des[i][j][1]['place_name']]})
         # final_info_des.append({'x':[total_catergorize_list_des[i][j][1]['x']]})
         # final_info_des.append({'y':[total_catergorize_list_des[i][j][1]['y']]})
-        final_info_des.append({'place_name':[total_catergorize_list_des[i][j][1]['place_name']],'x':[total_catergorize_list_des[i][j][1]['x']], 'y':[total_catergorize_list_des[i][j][1]['y']],'place_url':total_catergorize_list_des[i][j][1]['place_url'], 'category':category_list_des[n]})
+        final_info_des.append({'placeName':[total_catergorize_list_des[i][j][1]['place_name']],'x':[total_catergorize_list_des[i][j][1]['x']], 'y':[total_catergorize_list_des[i][j][1]['y']],'placeURL':total_catergorize_list_des[i][j][1]['place_url'], 'category':category_list_des[n] ,'placeID':[total_catergorize_list_des[i][j][1]['id']],'placeThumbnail':[total_catergorize_list_des[i][j][1]['placeThumbnail']],'placeRating':[total_catergorize_list_des[i][j][1]['placeRating']]})
         semi_final_info_des.append(final_info_des)
         li_des.append(final_info_des)
         n+=1
@@ -443,11 +502,11 @@ def data_processing_(q,data):
     # print(real)
 
     # 중복 제거!!!
-    x = list({i['place_name'][0]:i for i in real}.values())
+    place_info = list({i['placeName'][0]:i for i in real}.values())
     # print("최종 데이터!!!!!")
     # print(x)
     print("검색어 : ", place)
-    return video_info, x
+    return video_info, place_info
 
 # dataset = collect_data('제주 Vlog','viewCount')
 # records = data_processing_(dataset)

@@ -10,7 +10,7 @@ class Video(models.Model):
     # email = models.EmailField()
     # cdate = models.DateTimeField(auto_now_add=True)
     videoID = models.CharField(unique=True, primary_key=True,max_length=50)
-    videoThumbnail = models.CharField(max_length=50)
+    videoThumbnail = models.TextField()
     title = models.CharField(max_length=200)
     publishTime = models.DateTimeField(default=timezone.now)
     viewCount = models.IntegerField()
@@ -28,6 +28,19 @@ class Video(models.Model):
     # address_6 varchar(32),
     class Meta:
         db_table = 'videoInfo'
+
+class Place(models.Model):
+    videoID = models.ForeignKey(Video, on_delete=models.CASCADE)
+    placeName = models.CharField(max_length=50)
+    placeID = models.CharField(unique=True, primary_key=True,max_length=50)
+    x = models.DecimalField(max_digits = 24, decimal_places = 18)
+    y = models.DecimalField(max_digits = 24, decimal_places = 18)
+    category = models.CharField(max_length=50)
+    placeURL = models.CharField(max_length=50)
+    placeThumbnail = models.TextField()
+    placeRating = models.FloatField()
+    class Meta:
+        db_table = 'locationInfo'
 
 # class locationInfo(models.Model):
 #     video_id = models.CharField(max_length=50)
