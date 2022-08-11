@@ -57,7 +57,7 @@ def data_processing_(q,data):
     df['videoThumbnail'] = videoThumbnail
     df2 = df.drop(['description'],axis=1)
     video_info = df2.to_dict('record')
-    df_new = df.drop(['title','description','publishTime','viewCount','author','videoURL','videoThumbnail'],axis=1)
+    df_new = df.drop(['description'],axis=1)
     first_info = df_new.to_dict('record')
     # print('정제되지 않은 첫 데이터','\n',first_info)
 
@@ -213,12 +213,20 @@ def data_processing_(q,data):
         # print('fix : ',category_list)
 
     # 장소 썸네일, 평점 크롤링해오기
-    driver = webdriver.Chrome('/home/kmusw/바탕화면/backend/extractlocation/chromedriver')
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument("--single-process")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    # chrome_options.add_argument('--profile-directory=Default')
+    # chrome_options.add_argument('--user-data-dir=C:/Temp/ChromeProfile')
+    driver = webdriver.Chrome('/home/kmusw/바탕화면/backend/extractlocation/chromedriver', chrome_options=chrome_options)
     for i in range (len(total_catergorize_list)):
       for j in range (len(total_catergorize_list[i])):
         # print(total_catergorize_list[i][j][1]['place_url'])
         driver.get(total_catergorize_list[i][j][1]['place_url'])
-        time.sleep(1)
+        time.sleep(10)
+        driver.implicitly_wait(10)
         html = driver.page_source
         soup = bs(html,'html.parser')
 
@@ -240,10 +248,11 @@ def data_processing_(q,data):
 
         # print(place_photo)
         total_catergorize_list[i][j][1]['placeThumbnail'] = place_photo
-
+        driver.implicitly_wait(10) # seconds
         rating = driver.find_element('xpath','//*[@id="mArticle"]/div[1]/div[1]/div[2]/div/div/a[1]/span[1]').text
         # print(rating)
         total_catergorize_list[i][j][1]['placeRating'] = rating
+    # driver.quit()
 
     # 필요한 정보들만 추려서 새 리스트에 넣기
     total_final_info = []
@@ -258,7 +267,7 @@ def data_processing_(q,data):
         # final_info.append({'place_name':[total_catergorize_list[i][j][1]['place_name']]})
         # final_info.append({'x':[total_catergorize_list[i][j][1]['x']]})
         # final_info.append({'y':[total_catergorize_list[i][j][1]['y']]})
-        final_info.append({'placeName':[total_catergorize_list[i][j][1]['place_name']],'x':[total_catergorize_list[i][j][1]['x']], 'y':[total_catergorize_list[i][j][1]['y']], 'placeURL':total_catergorize_list[i][j][1]['place_url'], 'category':category_list[n],'placeID':[total_catergorize_list[i][j][1]['id']],'placeThumbnail':[total_catergorize_list[i][j][1]['placeThumbnail']],'placeRating':[total_catergorize_list[i][j][1]['placeRating']]})
+        final_info.append({'placeName':total_catergorize_list[i][j][1]['place_name'],'x':total_catergorize_list[i][j][1]['x'], 'y':total_catergorize_list[i][j][1]['y'], 'placeURL':total_catergorize_list[i][j][1]['place_url'], 'category':category_list[n],'placeID':total_catergorize_list[i][j][1]['id'],'placeThumbnail':total_catergorize_list[i][j][1]['placeThumbnail'],'placeRating':total_catergorize_list[i][j][1]['placeRating']})
         semi_final_info.append(final_info)
         li.append(final_info)
         n+=1
@@ -424,7 +433,8 @@ def data_processing_(q,data):
       for j in range (len(total_catergorize_list_des[i])):
         # print(total_catergorize_list_des[i][j][1]['place_url'])
         driver.get(total_catergorize_list_des[i][j][1]['place_url'])
-        time.sleep(1)
+        time.sleep(10)
+        driver.implicitly_wait(10)
         html = driver.page_source
         soup = bs(html,'html.parser')
 
@@ -446,10 +456,11 @@ def data_processing_(q,data):
 
         # print(place_photo)
         total_catergorize_list_des[i][j][1]['placeThumbnail'] = place_photo
-
+        driver.implicitly_wait(10) # seconds
         rating = driver.find_element('xpath','//*[@id="mArticle"]/div[1]/div[1]/div[2]/div/div/a[1]/span[1]').text
         # print(rating)
         total_catergorize_list_des[i][j][1]['placeRating'] = rating
+    driver.quit()
 
     # 필요한 정보들만 추려서 새 리스트에 넣기
     total_final_info_des = []
@@ -464,7 +475,7 @@ def data_processing_(q,data):
         # final_info_des.append({'place_name':[total_catergorize_list_des[i][j][1]['place_name']]})
         # final_info_des.append({'x':[total_catergorize_list_des[i][j][1]['x']]})
         # final_info_des.append({'y':[total_catergorize_list_des[i][j][1]['y']]})
-        final_info_des.append({'placeName':[total_catergorize_list_des[i][j][1]['place_name']],'x':[total_catergorize_list_des[i][j][1]['x']], 'y':[total_catergorize_list_des[i][j][1]['y']],'placeURL':total_catergorize_list_des[i][j][1]['place_url'], 'category':category_list_des[n] ,'placeID':[total_catergorize_list_des[i][j][1]['id']],'placeThumbnail':[total_catergorize_list_des[i][j][1]['placeThumbnail']],'placeRating':[total_catergorize_list_des[i][j][1]['placeRating']]})
+        final_info_des.append({'placeName':total_catergorize_list_des[i][j][1]['place_name'],'x':total_catergorize_list_des[i][j][1]['x'], 'y':total_catergorize_list_des[i][j][1]['y'],'placeURL':total_catergorize_list_des[i][j][1]['place_url'], 'category':category_list_des[n] ,'placeID':total_catergorize_list_des[i][j][1]['id'],'placeThumbnail':total_catergorize_list_des[i][j][1]['placeThumbnail'],'placeRating':total_catergorize_list_des[i][j][1]['placeRating']})
         semi_final_info_des.append(final_info_des)
         li_des.append(final_info_des)
         n+=1
@@ -490,7 +501,7 @@ def data_processing_(q,data):
       full_data.append(i)
     for j in li_des:
       full_data.append(j)
-    # print(full_data)
+    # print("fulldata",full_data)
 
     # print(len(full_data))
 
@@ -499,14 +510,16 @@ def data_processing_(q,data):
     for i in range (len(full_data)):
       # print(full_data[i][1]['place_name'])
       real.append(full_data[i][1:][0])
-    # print(real)
+    # print("real",real)
 
     # 중복 제거!!!
     place_info = list({i['placeName'][0]:i for i in real}.values())
     # print("최종 데이터!!!!!")
     # print(x)
     print("검색어 : ", place)
-    return video_info, place_info
+    # pprint(place_info)
+    # return video_info, place_info
+    return place_info
 
 # dataset = collect_data('제주 Vlog','viewCount')
 # records = data_processing_(dataset)

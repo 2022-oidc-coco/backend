@@ -1,0 +1,8 @@
+[0809/173954.231857:WARNING:discardable_shared_memory_manager.cc(198)] Less than 64MB of free space in temporary directory for shared memory files: 0
+[0809/173954.246102:ERROR:devtools_http_handler.cc(292)] Error writing DevTools active port to file
+[0809/173954.250587:ERROR:simple_backend_impl.cc(79)] Failed to create directory: /opt/google/chrome/C:/Temp/ChromeProfile/Default/Code Cache/js
+[0809/173954.250726:ERROR:simple_backend_impl.cc(79)] Failed to create directory: /opt/google/chrome/C:/Temp/ChromeProfile/Default/Code Cache/js
+[0809/173954.250762:ERROR:simple_backend_impl.cc(734)] Simple Cache Backend: wrong file structure on disk: 1 path: /opt/google/chrome/C:/Temp/ChromeProfile/Default/Code Cache/js
+[0809/173954.250806:ERROR:simple_backend_impl.cc(79)] Failed to create directory: /opt/google/chrome/C:/Temp/ChromeProfile/Default/Code Cache/wasm
+[0809/173954.251051:ERROR:simple_backend_impl.cc(79)] Failed to create directory: /opt/google/chrome/C:/Temp/ChromeProfile/Default/Code Cache/wasm
+[0809/173954.251071:ERROR:simple_backend_impl.cc(734)] Simple Cache Backend: wrong file structure on disk: 1 path: /opt/google/chrome/C:/Temp/ChromeProfile/Default/Code Cache/wasm

@@ -30,20 +30,33 @@ def insert(request):
         #irum = request.POST.get("name")
         irum = request.POST["name"]
         dataset = collect_data(irum,'viewCount')
-        v_records, p_records = data_processing_(irum,dataset)
+        records = data_processing_(irum,dataset)
         print("-----------------데이터 전처리 결과-----------------")
-        pprint(v_records)
-        for i in range(len(v_records)):
+        pprint(records)
+        for i in range(len(records)):
             # form = Form(records[i])
             form = Video(
-            videoID=v_records[i]['videoID'],
-            publishTime=v_records[i]['publishTime'].to_pydatetime(),
-            viewCount=v_records[i]['viewCount'],
-            author = v_records[i]['author'],
-            videoThumbnail = v_records[i]['videoThumbnail'],
-            title = v_records[i]['title'],
-            videoURL = v_records[i]['videoURL']
+            videoID=records[i]['videoID'],
+            publishTime=records[i]['publishTime'].to_pydatetime(),
+            viewCount=records[i]['viewCount'],
+            author = records[i]['author'],
+            videoThumbnail = records[i]['videoThumbnail'],
+            title = records[i]['title'],
+            videoURL = records[i]['videoURL']
             )
+            form.save()
+            form2 = Place(
+            videoID = Video.objects.get(pk=records[i]['videoID']),
+            placeName = records[i]['placeName'],
+            placeID = records[i]['placeID'],
+            x = records[i]['x'],
+            y = records[i]['y'],
+            category = records[i]['category'],
+            placeURL = records[i]['placeURL'],
+            placeThumbnail = records[i]['placeThumbnail'],
+            placeRating = records[i]['placeRating']
+            )
+            form2.save()
             # form = locationInfo(
             # place_name = records[i]['place_name'][0],
             # x=Decimal(records[i]['x'][0]),
@@ -57,20 +70,6 @@ def insert(request):
             # )
             # print(form)
             # if form.is_valid():
-            form.save()
-        for i in range(len(p_records)):
-            form = Place(
-            videoID = p_records[i]['videoID'],
-            placeName = p_records[i]['placeName'],
-            placeID = p_records[i]['placeID'],
-            x = p_records[i]['x'],
-            y = p_records[i]['y'],
-            category = p_records[i]['category'],
-            placeURL = p_records[i]['placeURL'],
-            placeThumbnail = p_records[i]['placeThumbnail'],
-            placeRating = p_records[i]['placeRating']
-            )
-            form.save()
         videoinfo = Video.objects.all()
         placeinfo = Place.objects.all()
         print("-----------------DB-----------------")
